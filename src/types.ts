@@ -4,3 +4,8 @@ export enum AsyncStatus {
     resolved = "resolved",
     rejected = "rejected"
 }
+
+export enum Role {
+    admin = "admin",
+    standard = "standard"
+}

@@ -73,7 +73,6 @@
         "react/no-multi-comp": "error",
         "react/no-unknown-property": "error",
         "react/prop-types": "error",
-        "react/react-in-jsx-scope": "error",
         "react/self-closing-comp": "error",
         "react/sort-prop-types": "error",
         "react/jsx-indent-props": ["error", 4],
