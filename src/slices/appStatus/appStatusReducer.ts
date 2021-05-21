@@ -30,6 +30,9 @@ const appStatusSlice = createSlice({
         },
         didConfirmHasAccess: (state) => state,
         didGetAccessTokenFromServer: function (state, {payload}) {
+            console.log("SFHSRFHWSRHGWRHWRHRWHRETWHWRHWR");
+            console.log("updating state with the USER ID");
+
             const {accessToken, role, userId} = payload;
             state.accessToken = accessToken;
             state.role = role;
@@ -50,6 +53,8 @@ const appStatusSlice = createSlice({
             state.loginLoadingStatus = AsyncStatus.pending;
         },
         didLogin: function (state, {payload}) {
+            console.log("SFHSRFHWSRHGWRHWRHRWHRETWHWRHWR");
+            console.log("updating state with the USER ID");
             const {accessToken, role, userId} = payload;
 
             state.isLoggedIn = true;
