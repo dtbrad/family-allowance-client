@@ -33,7 +33,7 @@ export function getCurrentAccessToken(): AppThunk {
         let accessToken = selectAccessToken(getState());
 
         if (isTokenValid(accessToken)) {
-            return dispatch(didConfirmHasAccess);
+            return dispatch(didConfirmHasAccess());
         }
 
         try {
@@ -56,14 +56,14 @@ export function getCurrentAccessToken(): AppThunk {
 
 export function loginUser(userId: string, password: string): AppThunk {
     return async function (dispatch) {
-        await dispatch(willLogin);
+        await dispatch(willLogin());
 
         try {
             const accessToken = await postLogin(userId, password);
             const role = getRole(accessToken);
             cookies.remove("loggedOut");
 
-            return dispatch(didLogin({userId, role}));
+            return dispatch(didLogin({accessToken, userId, role}));
         } catch (error) {
             return dispatch(failedToLogin());
         }

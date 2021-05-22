@@ -1,22 +1,26 @@
 import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import Button from "react-bootstrap/Button";
-import {AsyncStatus} from "types";
-import {logOutUser} from "slices/appStatus/appStatusThunks";
+import {useHistory} from "react-router-dom";
 import {selectIsLoggedIn, selectLogoutLoadingStatus} from "slices/appStatus/appStatusSelectors";
+import {logOutUser} from "slices/appStatus/appStatusThunks";
+import {AsyncStatus} from "types";
 
 export default function LogoutButton() {
     const dispatch = useAppDispatch();
+    const history = useHistory();
     const isLoggedIn = useAppSelector(selectIsLoggedIn);
     const logoutLoadingStatus = useAppSelector(selectLogoutLoadingStatus);
 
     async function handleCLick() {
         await dispatch(logOutUser());
+        history.push("/");
     }
 
     if (isLoggedIn) {
         return (
             <div className="logout-section">
                 <Button
+                    variant="light"
                     disabled={logoutLoadingStatus === AsyncStatus.pending}
                     className="logout-button"
                     onClick={handleCLick}
