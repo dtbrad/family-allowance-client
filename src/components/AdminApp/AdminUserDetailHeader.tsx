@@ -3,21 +3,18 @@ import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import {SyntheticEvent, useEffect, useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import CurrencyInput from "react-currency-input-field";
-import {selectUpdateUserStatus} from "slices/userDetail/userDetailSelectors";
+import {selectUpdateUserStatus, selectUserBalance, selectUserId} from "slices/userDetail/userDetailSelectors";
 import {addTransaction} from "slices/userDetail/userDetailThunks";
 import {AsyncStatus} from "types";
 import "./AdminUserDetailHeader.less";
 
-interface AdminUserDetailHeaderProps {
-    userId: string;
-    balance: number;
-}
-
-export default function AdminUserDetailHeader({userId, balance}: AdminUserDetailHeaderProps) {
+export default function AdminUserDetailHeader() {
     const dispatch = useAppDispatch();
+    const userUpdateStatus = useAppSelector(selectUpdateUserStatus);
+    const userId = useAppSelector(selectUserId);
+    const balance = useAppSelector(selectUserBalance);
     const [moneyAmount, setMoneyAmount] = useState("");
     const [description, setDescription] = useState("");
-    const userUpdateStatus = useAppSelector(selectUpdateUserStatus);
     const successfulTransaction = userUpdateStatus === AsyncStatus.resolved;
 
     useEffect(function () {
@@ -73,7 +70,7 @@ export default function AdminUserDetailHeader({userId, balance}: AdminUserDetail
                         {
                             userUpdateStatus === AsyncStatus.pending
                                 ? "Uploading"
-                                : "Submit"
+                                : "Add Transaction"
                         }
                     </Button>
                 </Form.Group>

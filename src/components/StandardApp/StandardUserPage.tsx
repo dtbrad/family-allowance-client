@@ -1,11 +1,11 @@
+import formatCurrency from "helpers/formatCurrency";
 import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import useDidMount from "hooks/useDidMount";
 import {selectUserId} from "slices/appStatus/appStatusSelectors";
-import {selectUser} from "slices/userDetail/userDetailSelectors";
+import {selectUserBalance} from "slices/userDetail/userDetailSelectors";
 import {initializeUserSummary} from "slices/userDetail/userDetailThunks";
 import {TransactionEntriesTable} from "../common";
 import "./StandardUserPage.less";
-import formatCurrency from "helpers/formatCurrency";
 
 export default function StandardUserPage() {
     const loggedInUserId = useAppSelector(selectUserId);
@@ -13,18 +13,16 @@ export default function StandardUserPage() {
 
     useDidMount(() => dispatch(initializeUserSummary(loggedInUserId)));
 
-    const user = useAppSelector(selectUser);
+    const balance = useAppSelector(selectUserBalance);
 
-    if (!user) {
+    if (!balance) {
         return null;
     }
-
-    const {balance, transactions} = user;
 
     return (
         <div className="standard-user-detail-page">
             <h1 className="standard-user-detail-page__balance" >Current Balance: {formatCurrency(balance)}</h1>
-            <TransactionEntriesTable transactions={transactions} />
+            <TransactionEntriesTable />
         </div>
     );
 }

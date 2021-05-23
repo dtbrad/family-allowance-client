@@ -3,8 +3,9 @@ import useDidMount from "hooks/useDidMount";
 import useDidUnMount from "hooks/useDidUnmount";
 import {useParams} from "react-router-dom";
 import {didResetUserUpdate} from "slices/userDetail/userDetailReducer";
-import {selectuserBalance, selectuserTransactions} from "slices/userDetail/userDetailSelectors";
+import {selectUserInitializationStatus} from "slices/userDetail/userDetailSelectors";
 import {initializeUserSummary} from "slices/userDetail/userDetailThunks";
+import {AsyncStatus} from "types";
 import {TransactionEntriesTable} from "../common";
 import AdminUserDetailHeader from "./AdminUserDetailHeader";
 import "./AdminUserDetailPage.less";
@@ -16,10 +17,13 @@ export default function AdminUserDetailPage() {
     useDidMount(() => dispatch(initializeUserSummary(userId)));
     useDidUnMount(() => dispatch(didResetUserUpdate()));
 
-    const balance = useAppSelector(selectuserBalance);
-    const transactions = useAppSelector(selectuserTransactions);
+    const userDetailInitializationStatus = useAppSelector(selectUserInitializationStatus);
 
-    if (!transactions) {
+    if (userDetailInitializationStatus === AsyncStatus.pending) {
+        return <h2>User Detail Loading...</h2>;
+    }
+
+    if (userDetailInitializationStatus !== AsyncStatus.resolved) {
         return null;
     }
 
@@ -28,8 +32,8 @@ export default function AdminUserDetailPage() {
             <div className="admin-user-detail-page__message">
                 <AdminUserDetailPageMessage />
             </div>
-            <AdminUserDetailHeader userId={userId} balance={balance} />
-            <TransactionEntriesTable transactions={transactions} />
+            <AdminUserDetailHeader />
+            <TransactionEntriesTable />
         </div>
     );
 }

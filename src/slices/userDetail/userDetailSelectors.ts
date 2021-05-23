@@ -19,6 +19,6 @@ export const selectUserId = createSelector(selectUser, (user) => user?.userId);
 
 export const selectUserIdForSelectedUser = createSelector(selectUser, (user) => user?.userId);
 
-export const selectuserTransactions = createSelector(selectUser, (user) => user?.transactions);
+export const selectUserTransactions = createSelector(selectUser, (user) => user?.transactions);
 
-export const selectuserBalance = createSelector(selectUser, (user) => user?.balance);
+export const selectUserBalance = createSelector(selectUser, (user) => user?.balance);

@@ -1,7 +1,9 @@
+import {useAppSelector} from "hooks/reduxHooks";
 import {useState} from "react";
 import Alert from "react-bootstrap/Alert";
 import Pagination from "react-bootstrap/Pagination";
 import Table from "react-bootstrap/Table";
+import {selectUserTransactions} from "slices/userDetail/userDetailSelectors";
 import {Transaction} from "types";
 import "./TransactionEntriesTable.less";
 import TransactionEntryRow from "./TransactionEntryRow";
@@ -20,11 +22,8 @@ function getTransactionsForPage({transactionEntries, currentPage}: GetTransactio
     return itemsToDisplay;
 }
 
-interface TransactionEntriesTableProps {
-    transactions: Transaction[];
-}
-
-function TransactionEntriessTable({transactions}: TransactionEntriesTableProps) {
+export default function TransactionEntriesTable() {
+    const transactions = useAppSelector(selectUserTransactions);
     const [currentPage, setCurrentPage] = useState(1);
     const headers = ["Date", "Amount", "Description"];
 
@@ -92,5 +91,3 @@ function TransactionEntriessTable({transactions}: TransactionEntriesTableProps) 
 
     );
 }
-
-export default TransactionEntriessTable;
