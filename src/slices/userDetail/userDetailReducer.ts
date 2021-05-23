@@ -4,6 +4,7 @@ import {didLogOut} from "../appStatus/appStatusReducer";
 
 export interface UserState {
     userDetailInitializationState?: AsyncStatus;
+    updateUserDetailStatus?: AsyncStatus
     user?: User;
 }
 
@@ -18,12 +19,25 @@ export const userSummarySlice = createSlice({
         },
         didInitializeUser: function (state, {payload}) {
             state.userDetailInitializationState = AsyncStatus.resolved;
+            state.updateUserDetailStatus = AsyncStatus.idle;
             state.user = payload;
         },
         failedToInitializeUser: function (state) {
             state.userDetailInitializationState = AsyncStatus.rejected;
         },
-        didResetUser: () => initialState
+        willAddTransaction: function (state) {
+            state.updateUserDetailStatus = AsyncStatus.pending;
+        },
+        didAddTransaction: function (state, {payload}) {
+            state.updateUserDetailStatus = AsyncStatus.resolved;
+            state.user = payload;
+        },
+        failedToAddTransaction: function (state) {
+            state.updateUserDetailStatus = AsyncStatus.rejected;
+        },
+        didResetUserUpdate: function (state) {
+            state.updateUserDetailStatus = AsyncStatus.idle;
+        }
     },
     extraReducers: (builder) => builder
         .addCase(didLogOut, () => initialState)
@@ -33,7 +47,10 @@ export const {
     willInitializeUser,
     didInitializeUser,
     failedToInitializeUser,
-    didResetUser
+    didResetUserUpdate,
+    willAddTransaction,
+    didAddTransaction,
+    failedToAddTransaction
 } = userSummarySlice.actions;
 
 export default userSummarySlice.reducer;

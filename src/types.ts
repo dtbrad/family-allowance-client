@@ -11,7 +11,7 @@ export enum Role {
 }
 
 export interface Transaction {
-    date: string;
+    date?: string;
     amount: number;
     description: string;
 }
