@@ -18,9 +18,20 @@ export interface Transaction {
 
 export interface User {
     userId: string;
-    balance: number;
+    balance?: number;
     allowanceAmount: number;
-    role: string;
-    transactions: Transaction[];
+    role?: string;
+    transactions?: Transaction[];
     dayPreference: string;
+    password?: string
+}
+
+export enum Days {
+    Sunday = "Sunday",
+    Monday = "Monday",
+    Tuesday = "Tuesday",
+    Wednesday = "Wednesday",
+    Thursday = "Thursday",
+    Friday = "Friday",
+    Saturday = "Saturday"
 }

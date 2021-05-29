@@ -4,6 +4,7 @@ import {didLogOut} from "../appStatus/appStatusReducer";
 
 export interface UsersState {
     usersInitializationState?: AsyncStatus;
+    updateUsersStatus?: AsyncStatus;
     users?: User[]
 }
 
@@ -22,6 +23,16 @@ export const usersSlice = createSlice({
         },
         failedToInitializedUsers: function (state) {
             state.usersInitializationState = AsyncStatus.rejected;
+        },
+        willUpdateUsers: function (state) {
+            state.updateUsersStatus = AsyncStatus.pending;
+        },
+        didUpdateUsers: function (state, {payload}) {
+            state.users = payload;
+            state.updateUsersStatus = AsyncStatus.resolved;
+        },
+        failedToUpdateUsers: function (state) {
+            state.updateUsersStatus = AsyncStatus.rejected;
         }
     },
     extraReducers: (builder) => builder
@@ -31,7 +42,10 @@ export const usersSlice = createSlice({
 export const {
     willInitializeUsers,
     didInitializedUsers,
-    failedToInitializedUsers
+    failedToInitializedUsers,
+    willUpdateUsers,
+    didUpdateUsers,
+    failedToUpdateUsers
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

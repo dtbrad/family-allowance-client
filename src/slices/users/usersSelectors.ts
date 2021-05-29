@@ -8,4 +8,9 @@ export const selectUsersInitializationStatus = createSelector(
     ({usersInitializationState}) => usersInitializationState
 );
 
+export const selectUpdateUsersStatus = createSelector(
+    selectUsersState,
+    ({updateUsersStatus}) => updateUsersStatus
+);
+
 export const selectUsers = createSelector(selectUsersState, ({users}) => users);
