@@ -29,9 +29,7 @@ export default function AdminUserDetailPage() {
 
     return (
         <div className="admin-user-detail-page">
-            <div className="admin-user-detail-page__message">
-                <AdminUserDetailPageMessage />
-            </div>
+            <AdminUserDetailPageMessage />
             <AdminUserDetailHeader />
             <TransactionEntriesTable />
         </div>

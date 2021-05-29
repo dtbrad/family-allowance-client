@@ -8,34 +8,37 @@ export default function AdminUserDefaultPageMessage() {
     const updateUserDetailStatus = useAppSelector(selectUpdateUserStatus);
     const dispatch = useAppDispatch();
 
+    let message;
+
     if (updateUserDetailStatus === AsyncStatus.resolved) {
-        return (
-            <div className="admin-user-detail-page__message">
-                <Alert
-                    show
-                    variant="success"
-                    dismissible
-                    onClose={() => dispatch(didResetUserUpdate())}
-                >
+        message = (
+            <Alert
+                show
+                variant="success"
+                dismissible
+                onClose={() => dispatch(didResetUserUpdate())}
+            >
                     Transaction successfully uploaded
-                </Alert>
-            </div>
+            </Alert>
         );
     }
 
     if (updateUserDetailStatus === AsyncStatus.rejected) {
-        return (
-            <div className="admin-user-detail-page__message">
-                <Alert
-                    show
-                    variant="danger"
-                >
+        message = (
+            <Alert
+                show
+                variant="danger"
+            >
                 Transaction failed to upload. Please try again.
-                </Alert>
-            </div>
+            </Alert>
         );
     }
 
-    return null;
+    return (
+        <div className="admin-user-detail-page__message">
+            {message}
+        </div>
+    );
+
 }
 
