@@ -1,5 +1,5 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {AsyncStatus, Role} from "types";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {AsyncStatus, Role, AuthenticatedUserData} from "types";
 
 export interface AppStatusState {
     isLoggedIn?: boolean;
@@ -29,8 +29,9 @@ const appStatusSlice = createSlice({
             state.initializationStatus = AsyncStatus.resolved;
         },
         didConfirmHasAccess: (state) => state,
-        didGetAccessTokenFromServer: function (state, {payload}) {
-            const {accessToken, role, userId} = payload;
+        didGetAccessTokenFromServer: function (state, action: PayloadAction<AuthenticatedUserData>) {
+            const {accessToken, role, userId} = action.payload;
+
             state.accessToken = accessToken;
             state.role = role;
             state.userId = userId;
@@ -49,8 +50,8 @@ const appStatusSlice = createSlice({
         willLogin: function (state) {
             state.loginLoadingStatus = AsyncStatus.pending;
         },
-        didLogin: function (state, {payload}) {
-            const {accessToken, role, userId} = payload;
+        didLogin: function (state, action: PayloadAction<AuthenticatedUserData>) {
+            const {accessToken, role, userId} = action.payload;
 
             state.isLoggedIn = true;
             state.loginLoadingStatus = AsyncStatus.resolved;

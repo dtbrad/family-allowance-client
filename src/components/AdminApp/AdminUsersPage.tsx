@@ -7,6 +7,7 @@ import {AsyncStatus} from "types";
 import "./AdminUsersPage.less";
 import AdminUsersTable from "./AdminUsersTable";
 import CreateUserForm from "./CreateUserForm";
+import AdminUsersMessages from "./AdminUsersMessages";
 
 export default function AdminUsersPage() {
     const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export default function AdminUsersPage() {
 
     return (
         <div className="admin-users-page" data-testid="admin-users-page">
+            <AdminUsersMessages />
             <h1 className="admin-users-page__title">Users</h1>
             <AdminUsersTable />
             <CreateUserForm />

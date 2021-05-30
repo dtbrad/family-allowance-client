@@ -26,6 +26,12 @@ export interface User {
     password?: string
 }
 
+export interface AuthenticatedUserData {
+    userId: string;
+    accessToken: string;
+    role: Role;
+}
+
 export enum Days {
     Sunday = "Sunday",
     Monday = "Monday",

@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AsyncStatus, User} from "types";
 import {didLogOut} from "../appStatus/appStatusReducer";
 
@@ -17,10 +17,10 @@ export const userSummarySlice = createSlice({
         willInitializeUser: function (state) {
             state.userDetailInitializationState = AsyncStatus.pending;
         },
-        didInitializeUser: function (state, {payload}) {
+        didInitializeUser: function (state, action: PayloadAction<User>) {
             state.userDetailInitializationState = AsyncStatus.resolved;
             state.updateUserDetailStatus = AsyncStatus.idle;
-            state.user = payload;
+            state.user = action.payload;
         },
         failedToInitializeUser: function (state) {
             state.userDetailInitializationState = AsyncStatus.rejected;
@@ -28,9 +28,9 @@ export const userSummarySlice = createSlice({
         willAddTransaction: function (state) {
             state.updateUserDetailStatus = AsyncStatus.pending;
         },
-        didAddTransaction: function (state, {payload}) {
+        didAddTransaction: function (state, action: PayloadAction<User>) {
             state.updateUserDetailStatus = AsyncStatus.resolved;
-            state.user = payload;
+            state.user = action.payload;
         },
         failedToAddTransaction: function (state) {
             state.updateUserDetailStatus = AsyncStatus.rejected;

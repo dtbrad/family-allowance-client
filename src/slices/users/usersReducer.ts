@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AsyncStatus, User} from "types";
 import {didLogOut} from "../appStatus/appStatusReducer";
 
@@ -17,9 +17,9 @@ export const usersSlice = createSlice({
         willInitializeUsers: function (state) {
             state.usersInitializationState = AsyncStatus.pending;
         },
-        didInitializedUsers: function (state, {payload}) {
+        didInitializedUsers: function (state, action: PayloadAction<User[]>) {
             state.usersInitializationState = AsyncStatus.resolved;
-            state.users = payload;
+            state.users = action.payload;
         },
         failedToInitializedUsers: function (state) {
             state.usersInitializationState = AsyncStatus.rejected;
@@ -27,12 +27,15 @@ export const usersSlice = createSlice({
         willUpdateUsers: function (state) {
             state.updateUsersStatus = AsyncStatus.pending;
         },
-        didUpdateUsers: function (state, {payload}) {
-            state.users = payload;
+        didUpdateUsers: function (state, action: PayloadAction<User[]>) {
+            state.users = action.payload;
             state.updateUsersStatus = AsyncStatus.resolved;
         },
         failedToUpdateUsers: function (state) {
             state.updateUsersStatus = AsyncStatus.rejected;
+        },
+        didResetUsersUpate: function (state) {
+            state.updateUsersStatus = AsyncStatus.idle;
         }
     },
     extraReducers: (builder) => builder
@@ -43,6 +46,7 @@ export const {
     willInitializeUsers,
     didInitializedUsers,
     failedToInitializedUsers,
+    didResetUsersUpate,
     willUpdateUsers,
     didUpdateUsers,
     failedToUpdateUsers
