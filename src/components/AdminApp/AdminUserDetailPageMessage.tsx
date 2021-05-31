@@ -1,6 +1,6 @@
 import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import Alert from "react-bootstrap/Alert";
-import {didResetUserUpdate} from "slices/userDetail/userDetailReducer";
+import {didResetUpdateUserDetailStatus} from "slices/userDetail/userDetailReducer";
 import {selectUpdateUserStatus} from "slices/userDetail/userDetailSelectors";
 import {AsyncStatus} from "types";
 
@@ -16,7 +16,7 @@ export default function AdminUserDefaultPageMessage() {
                 show
                 variant="success"
                 dismissible
-                onClose={() => dispatch(didResetUserUpdate())}
+                onClose={() => dispatch(didResetUpdateUserDetailStatus())}
             >
                     Transaction successfully uploaded
             </Alert>

@@ -5,11 +5,11 @@ import {Transaction} from "types";
 import {selectAccessToken} from "../appStatus/appStatusSelectors";
 import {getCurrentAccessToken} from "../appStatus/appStatusThunks";
 import {
-    didAddTransaction,
+    didUpdateUserDetail,
     didInitializeUser,
-    failedToAddTransaction,
+    failedToUpdateUserDetail,
     failedToInitializeUser,
-    willAddTransaction, willInitializeUser
+    willUpdateUserDetail, willInitializeUser
 } from "./userDetailReducer";
 
 export function initializeUserSummary(userId: string): AppThunk {
@@ -44,15 +44,15 @@ export function addTransaction(userId: string, transaction: Transaction): AppThu
             return;
         }
 
-        await dispatch(willAddTransaction());
+        await dispatch(willUpdateUserDetail());
 
         try {
             await postTransaction(userId, transaction, accessToken);
             const user = await fetchUser(userId, accessToken);
 
-            await dispatch(didAddTransaction(user));
+            await dispatch(didUpdateUserDetail(user));
         } catch (error) {
-            await dispatch(failedToAddTransaction());
+            await dispatch(failedToUpdateUserDetail());
         }
     };
 }

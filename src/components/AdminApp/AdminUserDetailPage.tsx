@@ -1,8 +1,6 @@
 import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import useDidMount from "hooks/useDidMount";
-import useDidUnMount from "hooks/useDidUnmount";
 import {useParams} from "react-router-dom";
-import {didResetUserUpdate} from "slices/userDetail/userDetailReducer";
 import {selectUserInitializationStatus} from "slices/userDetail/userDetailSelectors";
 import {initializeUserSummary} from "slices/userDetail/userDetailThunks";
 import {AsyncStatus} from "types";
@@ -15,7 +13,6 @@ export default function AdminUserDetailPage() {
     const {userId} = useParams<{userId: string}>();
     const dispatch = useAppDispatch();
     useDidMount(() => dispatch(initializeUserSummary(userId)));
-    useDidUnMount(() => dispatch(didResetUserUpdate()));
 
     const userDetailInitializationStatus = useAppSelector(selectUserInitializationStatus);
 

@@ -34,7 +34,7 @@ export const usersSlice = createSlice({
         failedToUpdateUsers: function (state) {
             state.updateUsersStatus = AsyncStatus.rejected;
         },
-        didResetUsersUpate: function (state) {
+        didResetUpdateUsersStatus: function (state) {
             state.updateUsersStatus = AsyncStatus.idle;
         }
     },
@@ -46,7 +46,7 @@ export const {
     willInitializeUsers,
     didInitializedUsers,
     failedToInitializedUsers,
-    didResetUsersUpate,
+    didResetUpdateUsersStatus,
     willUpdateUsers,
     didUpdateUsers,
     failedToUpdateUsers

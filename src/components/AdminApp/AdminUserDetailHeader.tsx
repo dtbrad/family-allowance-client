@@ -18,6 +18,7 @@ export default function AdminUserDetailHeader() {
     const successfulTransaction = userUpdateStatus === AsyncStatus.resolved;
 
     useEffect(function () {
+        console.log("INSIDE USER DETAIL USE EFFECT");
         setMoneyAmount("");
         setDescription("");
     }, [successfulTransaction]);

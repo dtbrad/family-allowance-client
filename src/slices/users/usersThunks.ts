@@ -1,7 +1,7 @@
 import {fetchUsers, postUser} from "data";
 import {AppThunk} from "store";
 import {AsyncStatus, User} from "types";
-import {selectAccessToken, selectIsAccessTokenValid} from "../appStatus/appStatusSelectors";
+import {selectAccessToken} from "../appStatus/appStatusSelectors";
 import {getCurrentAccessToken} from "../appStatus/appStatusThunks";
 import {
     didInitializedUsers,

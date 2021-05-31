@@ -1,6 +1,6 @@
 import {useAppDispatch, useAppSelector} from "hooks/reduxHooks";
 import Alert from "react-bootstrap/Alert";
-import {didResetUsersUpate} from "slices/users/usersReducer";
+import {didResetUpdateUsersStatus} from "slices/users/usersReducer";
 import {selectUpdateUsersStatus} from "slices/users/usersSelectors";
 import {AsyncStatus} from "types";
 
@@ -16,7 +16,7 @@ export default function AdminUsersMessage() {
                 show
                 variant="success"
                 dismissible
-                onClose={() => dispatch(didResetUsersUpate())}
+                onClose={() => dispatch(didResetUpdateUsersStatus())}
             >
                     User successfully added
             </Alert>

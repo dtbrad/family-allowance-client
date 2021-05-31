@@ -25,17 +25,17 @@ export const userSummarySlice = createSlice({
         failedToInitializeUser: function (state) {
             state.userDetailInitializationState = AsyncStatus.rejected;
         },
-        willAddTransaction: function (state) {
+        willUpdateUserDetail: function (state) {
             state.updateUserDetailStatus = AsyncStatus.pending;
         },
-        didAddTransaction: function (state, action: PayloadAction<User>) {
+        didUpdateUserDetail: function (state, action: PayloadAction<User>) {
             state.updateUserDetailStatus = AsyncStatus.resolved;
             state.user = action.payload;
         },
-        failedToAddTransaction: function (state) {
+        failedToUpdateUserDetail: function (state) {
             state.updateUserDetailStatus = AsyncStatus.rejected;
         },
-        didResetUserUpdate: function (state) {
+        didResetUpdateUserDetailStatus: function (state) {
             state.updateUserDetailStatus = AsyncStatus.idle;
         }
     },
@@ -47,10 +47,10 @@ export const {
     willInitializeUser,
     didInitializeUser,
     failedToInitializeUser,
-    didResetUserUpdate,
-    willAddTransaction,
-    didAddTransaction,
-    failedToAddTransaction
+    didResetUpdateUserDetailStatus,
+    willUpdateUserDetail,
+    didUpdateUserDetail,
+    failedToUpdateUserDetail
 } = userSummarySlice.actions;
 
 export default userSummarySlice.reducer;
