@@ -1,19 +1,16 @@
 import {fetchUser, postTransaction} from "data";
+import {isTokenValid} from "helpers/tokenService";
 import {AppThunk} from "store";
-import {
-    selectAccessToken,
-    selectIsAccessTokenValid
-} from "../appStatus/appStatusSelectors";
+import {Transaction} from "types";
+import {selectAccessToken} from "../appStatus/appStatusSelectors";
 import {getCurrentAccessToken} from "../appStatus/appStatusThunks";
 import {
-    willInitializeUser,
-    didInitializeUser,
-    failedToInitializeUser,
-    willAddTransaction,
     didAddTransaction,
-    failedToAddTransaction
+    didInitializeUser,
+    failedToAddTransaction,
+    failedToInitializeUser,
+    willAddTransaction, willInitializeUser
 } from "./userDetailReducer";
-import {Transaction} from "types";
 
 export function initializeUserSummary(userId: string): AppThunk {
     return async function (dispatch, getState) {
@@ -21,11 +18,11 @@ export function initializeUserSummary(userId: string): AppThunk {
 
         await dispatch(getCurrentAccessToken());
 
-        if (!selectIsAccessTokenValid(getState())) {
+        const accessToken = selectAccessToken(getState());
+
+        if (!isTokenValid(accessToken)) {
             await dispatch(failedToInitializeUser());
         }
-
-        const accessToken = selectAccessToken(getState());
 
         try {
             const user = await fetchUser(userId, accessToken);
@@ -41,11 +38,11 @@ export function addTransaction(userId: string, transaction: Transaction): AppThu
     return async function (dispatch, getState) {
         await dispatch(getCurrentAccessToken());
 
-        if (!selectIsAccessTokenValid(getState())) {
+        const accessToken = selectAccessToken(getState());
+
+        if (!isTokenValid(accessToken)) {
             return;
         }
-
-        const accessToken = selectAccessToken(getState());
 
         await dispatch(willAddTransaction());
 

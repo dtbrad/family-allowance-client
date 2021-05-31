@@ -12,6 +12,7 @@ import {
     willUpdateUsers
 } from "./usersReducer";
 import {selectUsersInitializationStatus} from "./usersSelectors";
+import {isTokenValid} from "helpers/tokenService";
 
 export function initializeUsers(): AppThunk {
     return async function (dispatch, getState) {
@@ -19,14 +20,15 @@ export function initializeUsers(): AppThunk {
         if (pageStatus === AsyncStatus.resolved) {
             return;
         }
-        await dispatch(willInitializeUsers());
         await dispatch(getCurrentAccessToken());
 
-        if (!selectIsAccessTokenValid(getState())) {
+        const accessToken = selectAccessToken(getState());
+
+        if (!isTokenValid(accessToken)) {
             return await dispatch(failedToInitializedUsers());
         }
 
-        const accessToken = selectAccessToken(getState());
+        await dispatch(willInitializeUsers());
 
         try {
             const users = await fetchUsers(accessToken);
@@ -38,16 +40,15 @@ export function initializeUsers(): AppThunk {
     };
 }
 
-
 export function updateUsers(newUser: User): AppThunk {
     return async function (dispatch, getState) {
         await dispatch(getCurrentAccessToken());
 
-        if (!selectIsAccessTokenValid(getState())) {
+        const accessToken = selectAccessToken(getState());
+
+        if (!isTokenValid(accessToken)) {
             return;
         }
-
-        const accessToken = selectAccessToken(getState());
 
         await dispatch(willUpdateUsers());
 
