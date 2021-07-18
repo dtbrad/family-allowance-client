@@ -2,13 +2,14 @@ import {screen, Screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {createMemoryHistory, MemoryHistory} from "history";
 import {
-    handleTokenFetchRequest,
     handleLoginPostRequest,
+    handleTokenFetchRequest,
+    handleUsersFetchRequest,
     server
 } from "testInfrastructure/mockServer";
+import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
-import renderWithStore from "testInfrastructure/renderWithStore";
 
 describe("App Login", function () {
     let history: MemoryHistory;
@@ -58,6 +59,8 @@ describe("App Login", function () {
 
     it("should handle login for an admin user", async function () {
         server.use(handleLoginPostRequest({userId: "daniel", role: Role.admin}));
+        server.use(handleUsersFetchRequest({}));
+
         await initializeLoginPage();
 
         simulateLogin(screen, {userId: "Theodore", password: "password"});

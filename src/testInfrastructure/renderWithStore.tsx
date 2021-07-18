@@ -1,9 +1,10 @@
 import {configureStore} from "@reduxjs/toolkit";
 import {render} from "@testing-library/react";
-import {Provider} from "react-redux";
-import appStatusReducer from "slices/appStatus/appStatusReducer";
 import {MemoryHistory} from "history";
+import {Provider} from "react-redux";
 import {Router} from "react-router-dom";
+import appStatusReducer from "slices/appStatus/appStatusReducer";
+import usersReducer from "slices/users/usersReducer";
 
 interface RenderWithStoreParams {
     ui: JSX.Element,
@@ -13,7 +14,8 @@ interface RenderWithStoreParams {
 export default function renderWithStore({ui, history, preloadedState}: RenderWithStoreParams) {
     const store = configureStore({
         reducer: {
-            appStatus: appStatusReducer
+            appStatus: appStatusReducer,
+            users: usersReducer
         },
         preloadedState
     });

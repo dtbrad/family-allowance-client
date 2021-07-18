@@ -1,6 +1,6 @@
 import {screen, waitFor} from "@testing-library/react";
 import {createMemoryHistory, MemoryHistory} from "history";
-import {handleTokenFetchRequest, server} from "testInfrastructure/mockServer";
+import {handleTokenFetchRequest, handleUsersFetchRequest, server} from "testInfrastructure/mockServer";
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
@@ -33,6 +33,7 @@ describe("App Initialization and Routing", function () {
 
         it("should load the admin users page for an authenticated admin user", async function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
+            server.use(handleUsersFetchRequest({}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {
@@ -115,6 +116,7 @@ describe("App Initialization and Routing", function () {
 
         it("should load the admin users page for an authenticated admin user", async function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
+            server.use(handleUsersFetchRequest({}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {

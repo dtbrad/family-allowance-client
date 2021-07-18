@@ -45,6 +45,7 @@ const appStatusSlice = createSlice({
         didLogin: function (state, action: PayloadAction<AuthenticatedUser>) {
             state.authenticatedUser = action.payload;
             state.loginLoadingStatus = AsyncStatus.resolved;
+            state.tokenLoadingStatus = AsyncStatus.idle;
         },
         failedToLogin: function (state) {
             state.authenticatedUser = undefined;

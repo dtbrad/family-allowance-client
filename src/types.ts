@@ -28,3 +28,7 @@ export interface User {
 }
 
 export type AuthenticatedUser = Pick<User, "userId" | "role" | "accessToken">;
+
+export type UserSummary = Pick<User, "userId" | "balance" | "allowanceAmount" | "dayPreference">;
+
+export type UserSummariesById = {[id: string]: UserSummary};

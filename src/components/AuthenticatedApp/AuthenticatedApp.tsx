@@ -6,7 +6,7 @@ import {AsyncStatus, Role} from "types";
 import AdminUserDetailPage from "./Admin/AdminUserDetailPage";
 import Header from "./Header";
 import "./AuthenticatedApp.less";
-import AdminUsersPage from "./Admin/AdminUsersPage";
+import {AdminUsersPage} from "./Admin/AdminUsersPage";
 
 export default function AuthenticatedApp() {
     const authenticatedUser = useAppSelector(selectAuthenticatedUser);

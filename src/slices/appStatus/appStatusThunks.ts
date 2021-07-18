@@ -22,13 +22,13 @@ const cookies = new Cookie();
 
 export function getCurrentAccessToken(): AppThunk {
     return async function (dispatch, getState) {
-        dispatch(willGetAccessTokenFromServer());
-
         let accessToken = selectAccessToken(getState());
 
         if (isTokenValid(accessToken)) {
             return dispatch(didConfirmHasAccess());
         }
+
+        dispatch(willGetAccessTokenFromServer());
 
         try {
             const accessToken = await fetchAccessToken();
