@@ -3,7 +3,7 @@ import {useAppSelector} from "hooks/reduxHooks";
 import {Redirect, Route, Switch} from "react-router-dom";
 import {selectAuthenticatedUser, selectLogoutLoadingStatus} from "slices/appStatus/appStatusSelectors";
 import {AsyncStatus, Role} from "types";
-import AdminUserDetailPage from "./Admin/AdminUserDetailPage";
+import {AdminUserDetailPage} from "./Admin/AdminUserDetailPage";
 import Header from "./Header";
 import "./AuthenticatedApp.less";
 import {AdminUsersPage} from "./Admin/AdminUsersPage";

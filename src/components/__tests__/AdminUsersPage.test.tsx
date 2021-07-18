@@ -1,10 +1,15 @@
 import {screen, waitFor} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import {createMemoryHistory, MemoryHistory} from "history";
-import {handleTokenFetchRequest, handleUsersFetchRequest, server} from "testInfrastructure/mockServer";
+import {
+    handleTokenFetchRequest,
+    handleUserDetailFetchRequest,
+    handleUsersFetchRequest,
+    server
+} from "testInfrastructure/mockServer";
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
-import userEvent from "@testing-library/user-event";
 
 describe("App Initialization and Routing", function () {
     let history: MemoryHistory;
@@ -87,6 +92,8 @@ describe("App Initialization and Routing", function () {
             await waitFor(function () {
                 expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
             });
+
+            server.use(handleUserDetailFetchRequest({userId: "adam"}));
 
             const userLink = screen.getByText("adam");
             userEvent.click(userLink);

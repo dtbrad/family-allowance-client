@@ -32,3 +32,17 @@ export type AuthenticatedUser = Pick<User, "userId" | "role" | "accessToken">;
 export type UserSummary = Pick<User, "userId" | "balance" | "allowanceAmount" | "dayPreference">;
 
 export type UserSummariesById = {[id: string]: UserSummary};
+
+export type UserDetail = Pick<User, "userId" | "balance" | "transactions">
+
+export type NewUserArgs = Pick<User, "userId" | "allowanceAmount" | "dayPreference" | "password">
+
+export interface ServerTransactions {
+    entries: Transaction[]
+}
+
+export interface ServerUserDetailResponse {
+    userId: string;
+    balance: number;
+    transactions: ServerTransactions;
+}

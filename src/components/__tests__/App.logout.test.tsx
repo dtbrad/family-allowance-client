@@ -1,5 +1,5 @@
 import {createMemoryHistory, MemoryHistory} from "history";
-import {handleTokenFetchRequest, handleLogoutFetchRequest, server} from "testInfrastructure/mockServer";
+import {handleTokenFetchRequest, handleLogoutFetchRequest, handleUserDetailFetchRequest, server} from "testInfrastructure/mockServer";
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
@@ -19,6 +19,7 @@ describe("App Logout", function () {
     describe("When clicking the logout button", function () {
         beforeEach(function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.standard}));
+            server.use(handleUserDetailFetchRequest({userId: "daniel"}));
         });
 
         it("should handle a successful logout fetch request", async function () {

@@ -1,6 +1,11 @@
 import {screen, waitFor} from "@testing-library/react";
 import {createMemoryHistory, MemoryHistory} from "history";
-import {handleTokenFetchRequest, handleUsersFetchRequest, server} from "testInfrastructure/mockServer";
+import {
+    handleTokenFetchRequest,
+    handleUserDetailFetchRequest,
+    handleUsersFetchRequest,
+    server
+} from "testInfrastructure/mockServer";
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
@@ -15,6 +20,7 @@ describe("App Initialization and Routing", function () {
     describe("When loading '/' route", function () {
         it("should load the standard user detail page for an authenticated standard user", async function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.standard}));
+            server.use(handleUserDetailFetchRequest({userId: "daniel"}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {
@@ -68,6 +74,7 @@ describe("App Initialization and Routing", function () {
 
         it("should load the standard user detail page for an authenticated standard user", async function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.standard}));
+            server.use(handleUserDetailFetchRequest({userId: "daniel"}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {
@@ -82,6 +89,7 @@ describe("App Initialization and Routing", function () {
 
         it("should load the admin user detail page for an authenticated admin user", async function () {
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
+            server.use(handleUserDetailFetchRequest({userId: "daniel"}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {
@@ -165,6 +173,7 @@ describe("App Initialization and Routing", function () {
 
         it("should load the admin user detail page for an authenticated admin user", async function () {
             server.use(handleTokenFetchRequest({userId: "john", role: Role.admin}));
+            server.use(handleUserDetailFetchRequest({userId: "daniel"}));
             renderWithStore({ui: <App />, history});
 
             await waitFor(function () {

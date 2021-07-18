@@ -5,6 +5,7 @@ import {
     handleLoginPostRequest,
     handleTokenFetchRequest,
     handleUsersFetchRequest,
+    handleUserDetailFetchRequest,
     server
 } from "testInfrastructure/mockServer";
 import renderWithStore from "testInfrastructure/renderWithStore";
@@ -16,6 +17,7 @@ describe("App Login", function () {
 
     async function initializeLoginPage() {
         server.use(handleTokenFetchRequest({error: true}));
+
         renderWithStore({ui: <App />, history});
 
         await waitFor(function () {
@@ -43,6 +45,7 @@ describe("App Login", function () {
 
     it("should handle login for a standard user", async function () {
         server.use(handleLoginPostRequest({userId: "daniel", role: Role.standard}));
+        server.use(handleUserDetailFetchRequest({userId: "daniel"}));
         await initializeLoginPage();
 
         simulateLogin(screen, {userId: "Daniel", password: "password"});
