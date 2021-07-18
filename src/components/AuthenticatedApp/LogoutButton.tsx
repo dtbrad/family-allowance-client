@@ -20,6 +20,7 @@ export default function LogoutButton() {
         return (
             <div className="logout-section">
                 <Button
+                    data-testid="logout-button"
                     variant="light"
                     disabled={logoutLoadingStatus === AsyncStatus.pending}
                     className="logout-button"
