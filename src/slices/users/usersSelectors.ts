@@ -8,6 +8,11 @@ export const selectUsersInitializationStatus = createSelector(
     ({usersInitializationStatus}) => usersInitializationStatus
 );
 
+export const selectUsersUpdateStatus = createSelector(
+    selectUsersState,
+    ({usersUpdateStatus}) => usersUpdateStatus
+);
+
 export const selectUsers = createSelector(selectUsersState, (usersState) => usersState?.users);
 
 export const selectUserIds = createSelector(selectUsers, (users) => users.userIds);

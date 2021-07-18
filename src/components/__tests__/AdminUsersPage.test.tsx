@@ -2,6 +2,7 @@ import {screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {createMemoryHistory, MemoryHistory} from "history";
 import {
+    handlePostUserRequest,
     handleTokenFetchRequest,
     handleUserDetailFetchRequest,
     handleUsersFetchRequest,
@@ -10,6 +11,48 @@ import {
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
+import selectEvent from "react-select-event";
+
+const initialServersResponse = [
+    {
+        userId: "chris",
+        balance: 200,
+        allowanceAmount: 5,
+        dayPreference: "Sunday"
+    },
+    {
+        userId: "ben",
+        balance: 39,
+        allowanceAmount: 10,
+        dayPreference: "Monday"
+    },
+    {
+        userId: "daniel",
+        balance: 400,
+        allowanceAmount: 11,
+        dayPreference: "Tuesday"
+    },
+    {
+        userId: "adam",
+        balance: 30,
+        allowanceAmount: 10,
+        dayPreference: "Wednesday"
+    }
+];
+
+const initialIds = ["adam", "ben", "chris", "daniel"];
+
+const updatedUsers = [
+    ...initialServersResponse,
+    {
+        userId: "timothy",
+        balance: 0,
+        allowanceAmount: 15,
+        dayPreference: "Thursday"
+    }
+];
+
+const updatedIds = [...initialIds, "timothy"];
 
 describe("App Initialization and Routing", function () {
     let history: MemoryHistory;
@@ -24,35 +67,10 @@ describe("App Initialization and Routing", function () {
         });
 
         it("should render the admin users page", async function () {
-            const usersServerResponse = [
-                {
-                    userId: "adam",
-                    balance: 0,
-                    allowanceAmount: 10,
-                    dayPreference: "Monday"
-                },
-                {
-                    userId: "ben",
-                    balance: 0,
-                    allowanceAmount: 10,
-                    dayPreference: "Monday"
-                },
-                {
-                    userId: "chris",
-                    balance: 0,
-                    allowanceAmount: 10,
-                    dayPreference: "Monday"
-                },
-                {
-                    userId: "daniel",
-                    balance: 0,
-                    allowanceAmount: 10,
-                    dayPreference: "Monday"
-                }
-            ];
-
             server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
-            server.use(handleUsersFetchRequest({users: usersServerResponse}));
+            server.use(handleUsersFetchRequest({users: initialServersResponse}));
+            server.use(handlePostUserRequest({users: updatedUsers}));
+
 
             renderWithStore({ui: <App />, history});
 
@@ -65,13 +83,40 @@ describe("App Initialization and Routing", function () {
                 expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
             });
 
-            const userRows = screen.getAllByTestId("user-summary-row");
+            let userRows = screen.getAllByTestId("user-summary-row");
 
             expect(userRows).toHaveLength(4);
 
-            // ensure that normalization didn't mess with order...
             userRows.forEach(function (userRow, index) {
-                expect(userRow).toHaveTextContent(usersServerResponse[index].userId);
+                expect(userRow).toHaveTextContent(initialIds[index]);
+            });
+
+            userEvent.click(screen.getByLabelText("Day Preference"));
+            const userIdInput = screen.getByLabelText("Name");
+            const passwordInput = screen.getByLabelText("Password");
+            const allowanceAmountInput = screen.getByLabelText("Allowance Amount");
+            const submitNewUserButton = screen.getByTestId("admin-users-update-users-submit");
+            userEvent.type(userIdInput, "brutus");
+            userEvent.type(passwordInput, "testpassword");
+            userEvent.type(allowanceAmountInput, "15");
+            await selectEvent.select(screen.getByText("Thursday"), "Thursday");
+            userEvent.click(submitNewUserButton);
+
+            await waitFor(function () {
+                expect(screen.queryByText("Uploading User...")).toBeInTheDocument();
+            });
+
+            await waitFor(function () {
+                expect(screen.queryByText("Uploading User...")).toBeNull();
+                expect(screen.getByText("User successfully added")).toBeInTheDocument();
+            });
+
+            userRows = screen.getAllByTestId("user-summary-row");
+
+            expect(userRows).toHaveLength(5);
+
+            userRows.forEach(function (userRow, index) {
+                expect(userRow).toHaveTextContent(updatedIds[index]);
             });
         });
 
