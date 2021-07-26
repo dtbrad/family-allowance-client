@@ -33,7 +33,7 @@ const updatedBrutusDetail = {
 };
 
 describe("Admin User Detail Page", function () {
-    it("should render the admin user detail apge", async function () {
+    it("should handle posting a transaction, including validation", async function () {
         server.use(handleTokenFetchRequest({userId: "admin", role: Role.admin}));
         server.use(handleUserDetailFetchRequest({userId: "brutus", userDetail: initialBrutusDetail}));
         server.use(handlePostTransactionRequest({userId: "brutus", userDetail: updatedBrutusDetail}));
@@ -50,12 +50,37 @@ describe("Admin User Detail Page", function () {
 
         expect(screen.getAllByTestId("transaction-row")).toHaveLength(1);
 
-        // post a transaction for brutus
         const amountInput = screen.getByLabelText("Amount");
         const descriptionInput = screen.getByLabelText("Description");
         const submitButton = screen.getByTestId("admin-user-detail-update-user-submit");
+
+        userEvent.click(submitButton);
+
+        await waitFor(function () {
+            expect(screen.getByText("Please enter an amount")).toBeInTheDocument();
+            expect(screen.getByText("Please enter a description")).toBeInTheDocument();
+        });
+
         userEvent.type(amountInput, "150");
+
+        await waitFor(function () {
+            expect(screen.queryByText("Please enter an amount")).toBeNull();
+            expect(screen.getByText("Please enter a description")).toBeInTheDocument();
+        });
+
+        userEvent.click(submitButton);
+
+        await waitFor(function () {
+            expect(screen.queryByText("Please enter an amount")).toBeNull();
+            expect(screen.getByText("Please enter a description")).toBeInTheDocument();
+        });
+
         userEvent.type(descriptionInput, "test amount");
+
+        await waitFor(function () {
+            expect(screen.queryByText("Please enter a description")).toBeNull();
+        });
+
         userEvent.click(submitButton);
 
         await waitFor(function () {
@@ -68,5 +93,38 @@ describe("Admin User Detail Page", function () {
             expect(screen.getByText("brutus's balance: $250.00")).toBeInTheDocument();
             expect(screen.getAllByTestId("transaction-row")).toHaveLength(2);
         });
+    });
+
+    it("should handle a failed transaction post request", async function () {
+        server.use(handleTokenFetchRequest({userId: "admin", role: Role.admin}));
+        server.use(handleUserDetailFetchRequest({userId: "brutus", userDetail: initialBrutusDetail}));
+        server.use(handlePostTransactionRequest({userId: "brutus", status: 500}));
+        const history = createMemoryHistory();
+        history.push("/admin/users/brutus");
+
+        renderWithStore({ui: <App />, history});
+
+        await waitFor(function () {
+            expect(screen.getByTestId("admin-user-detail-page")).toBeInTheDocument();
+        });
+
+        const amountInput = screen.getByLabelText("Amount");
+        const descriptionInput = screen.getByLabelText("Description");
+        const submitButton = screen.getByTestId("admin-user-detail-update-user-submit");
+
+        userEvent.type(amountInput, "150");
+        userEvent.type(descriptionInput, "some description");
+        userEvent.click(submitButton);
+
+        await waitFor(function () {
+            expect(screen.getByText("Uploading...")).toBeInTheDocument();
+        });
+
+
+        await waitFor(function () {
+            expect(screen.queryByText("Uploading...")).toBeNull();
+            expect(screen.getByText("Transaction failed to upload. Please try again.")).toBeInTheDocument();
+        });
+
     });
 });

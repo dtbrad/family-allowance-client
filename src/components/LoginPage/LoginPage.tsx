@@ -10,10 +10,12 @@ import {selectLoginLoadingStatus} from "slices/appStatus/appStatusSelectors";
 import {loginUser} from "slices/appStatus/appStatusThunks";
 import {AsyncStatus} from "types";
 import "./LoginPage.less";
+import ValidationFeedback from "components/ValidationFeedback";
 
 export default function LoginPage() {
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
+    const [attemptedSubmitWhileInvalid, setAttemptedSubmitWhileInvalid] = useState(false);
     const dispatch = useAppDispatch();
     const loginLoadingStatus = useAppSelector(selectLoginLoadingStatus);
     const history = useHistory();
@@ -21,7 +23,11 @@ export default function LoginPage() {
 
     async function handleSubmit(event: SyntheticEvent) {
         event.preventDefault();
-        await dispatch(loginUser(userId, password));
+        if (password && userId) {
+            return dispatch(loginUser(userId, password));
+        }
+
+        setAttemptedSubmitWhileInvalid(true);
     }
 
     return (
@@ -44,22 +50,33 @@ export default function LoginPage() {
                             <Form.Control
                                 type="text"
                                 placeholder="User ID"
-                                onChange={(e: any) => setUserId(e.target.value)}
+                                onChange={(e) => setUserId(e.target.value)}
                                 value={userId}
+                                isInvalid={attemptedSubmitWhileInvalid && !userId}
                             />
+                            <ValidationFeedback
+                                show={attemptedSubmitWhileInvalid && !userId}
+                                message="Please enter a user id."
+                            />
+
                         </Form.Group>
                         <Form.Group controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="password"
                                 placeholder="Password"
-                                onChange={(e: any) => setPassword(e.target.value)}
+                                onChange={(e) => setPassword(e.target.value)}
                                 value={password}
+                                isInvalid={attemptedSubmitWhileInvalid && !password}
+                            />
+                            <ValidationFeedback
+                                show={attemptedSubmitWhileInvalid && !password}
+                                message="Please enter a password."
                             />
                         </Form.Group>
                         <Button
                             data-testid="login-button"
-                            disabled={loginLoadingStatus === AsyncStatus.pending || !userId || !password}
+                            disabled={loginLoadingStatus === AsyncStatus.pending}
                             block
                             type="submit"
                             onClick={handleSubmit}

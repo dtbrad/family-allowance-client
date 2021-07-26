@@ -11,9 +11,8 @@ import {
 import renderWithStore from "testInfrastructure/renderWithStore";
 import {Role} from "types";
 import App from "../App";
-import selectEvent from "react-select-event";
 
-const initialServersResponse = [
+const defaultInitialServersResponse = [
     {
         userId: "chris",
         balance: 200,
@@ -42,8 +41,8 @@ const initialServersResponse = [
 
 const initialIds = ["adam", "ben", "chris", "daniel"];
 
-const updatedUsers = [
-    ...initialServersResponse,
+const defaultUpdatedUsers = [
+    ...defaultInitialServersResponse,
     {
         userId: "timothy",
         balance: 0,
@@ -57,6 +56,37 @@ const updatedIds = [...initialIds, "timothy"];
 describe("App Initialization and Routing", function () {
     let history: MemoryHistory;
 
+    async function loadAdminUsersPage({users = defaultInitialServersResponse, updatedUsers = defaultUpdatedUsers}) {
+        server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
+        server.use(handleUsersFetchRequest({users}));
+        server.use(handlePostUserRequest({users: updatedUsers}));
+
+        renderWithStore({ui: <App />, history});
+
+        await waitFor(function () {
+            expect(screen.getByText("Initializing App...")).toBeInTheDocument();
+        });
+
+        await waitFor(function () {
+            expect(screen.queryByText("Initializing App...")).toBeNull();
+            expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
+        });
+    }
+
+    function simulateNewUserInput({
+        userId = "brutus",
+        password = "Password1",
+        dayPreference = "Thursday",
+        moneyAllowanceAmount = "15"
+    }) {
+        userEvent.type(screen.getByLabelText("Name"), userId);
+        userEvent.type(screen.getByLabelText("Password"), password);
+        userEvent.type(screen.getByLabelText("Allowance Amount"), moneyAllowanceAmount);
+        userEvent.click(screen.getByLabelText("Day Preference"));
+        userEvent.selectOptions(screen.getByLabelText("Day Preference"), [dayPreference]);
+        userEvent.click(screen.getByTestId("admin-users-update-users-submit"));
+    }
+
     beforeEach(function () {
         history = createMemoryHistory();
     });
@@ -67,21 +97,7 @@ describe("App Initialization and Routing", function () {
         });
 
         it("should render the admin users page", async function () {
-            server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
-            server.use(handleUsersFetchRequest({users: initialServersResponse}));
-            server.use(handlePostUserRequest({users: updatedUsers}));
-
-
-            renderWithStore({ui: <App />, history});
-
-            await waitFor(function () {
-                expect(screen.getByText("Initializing App...")).toBeInTheDocument();
-            });
-
-            await waitFor(function () {
-                expect(screen.queryByText("Initializing App...")).toBeNull();
-                expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
-            });
+            await loadAdminUsersPage({});
 
             let userRows = screen.getAllByTestId("user-summary-row");
 
@@ -91,16 +107,7 @@ describe("App Initialization and Routing", function () {
                 expect(userRow).toHaveTextContent(initialIds[index]);
             });
 
-            userEvent.click(screen.getByLabelText("Day Preference"));
-            const userIdInput = screen.getByLabelText("Name");
-            const passwordInput = screen.getByLabelText("Password");
-            const allowanceAmountInput = screen.getByLabelText("Allowance Amount");
-            const submitNewUserButton = screen.getByTestId("admin-users-update-users-submit");
-            userEvent.type(userIdInput, "brutus");
-            userEvent.type(passwordInput, "testpassword");
-            userEvent.type(allowanceAmountInput, "15");
-            await selectEvent.select(screen.getByText("Thursday"), "Thursday");
-            userEvent.click(submitNewUserButton);
+            simulateNewUserInput({});
 
             await waitFor(function () {
                 expect(screen.queryByText("Uploading User...")).toBeInTheDocument();
@@ -129,14 +136,8 @@ describe("App Initialization and Routing", function () {
                     dayPreference: "Monday"
                 }
             ];
-            server.use(handleTokenFetchRequest({userId: "daniel", role: Role.admin}));
-            server.use(handleUsersFetchRequest({users: usersServerResponse}));
 
-            renderWithStore({ui: <App />, history});
-
-            await waitFor(function () {
-                expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
-            });
+            await loadAdminUsersPage({users: usersServerResponse});
 
             server.use(handleUserDetailFetchRequest({userId: "adam"}));
 
@@ -164,6 +165,119 @@ describe("App Initialization and Routing", function () {
                 expect(screen.getByText(
                     "There was a problem fetching users. Please try reloading the page."
                 )).toBeInTheDocument();
+            });
+        });
+
+        describe("new user form validation", function () {
+            it("should require an allowance amount", async function () {
+                await loadAdminUsersPage({});
+
+                simulateNewUserInput({moneyAllowanceAmount: ""});
+
+                await waitFor(function () {
+                    expect(screen.getByText("Please enter an amount")).toBeInTheDocument();
+                });
+
+                userEvent.type(screen.getByLabelText("Allowance Amount"), "14");
+
+                await waitFor(function () {
+                    expect(screen.queryByText("Please enter an amount")).toBeNull();
+                });
+
+                userEvent.click(screen.getByTestId("admin-users-update-users-submit"));
+
+                await waitFor(function () {
+                    expect(screen.queryByText("Uploading User...")).toBeInTheDocument();
+                });
+
+                await waitFor(function () {
+                    expect(screen.queryByText("Uploading User...")).toBeNull();
+                    expect(screen.getByText("User successfully added")).toBeInTheDocument();
+                });
+            });
+
+            it("should require a day preference", async function () {
+                await loadAdminUsersPage({});
+
+                simulateNewUserInput({dayPreference: ""});
+
+                await waitFor(function () {
+                    expect(screen.getByText("Please select a day")).toBeInTheDocument();
+                });
+            });
+
+            describe("user id validation", function () {
+                it("should require that new user id be at least 5 characters", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({userId: "nope"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("User Id must be in between 5-20 chars, only lowercase")).toBeInTheDocument();
+                    });
+                });
+
+                it("should require that new user id be no more than 20 characters", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({userId: "nopenopenopenopenopenopenope"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("User Id must be in between 5-20 chars, only lowercase")).toBeInTheDocument();
+                    });
+                });
+
+                it("should require that new user id be all lower case", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({userId: "Daniel"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("User Id must be in between 5-20 chars, only lowercase")).toBeInTheDocument();
+                    });
+                });
+            });
+
+            describe("password validation", function () {
+                it("should require that password be at least 8 characters", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({password: "Pass1"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("Password must have at least 8 chars, 1 uppercase, 1 lowercase and 1 digit")).toBeInTheDocument();
+                    });
+                });
+
+                it("should require that password be under 20 characters", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({password: "Pass1Pass1Pass1Pass1Pass1Pass1Pass1Pass1Pass1"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("Password must have at least 8 chars, 1 uppercase, 1 lowercase and 1 digit")).toBeInTheDocument();
+                    });
+                });
+
+                it("should require that password contain an uppercase character", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({password: "password1"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("Password must have at least 8 chars, 1 uppercase, 1 lowercase and 1 digit")).toBeInTheDocument();
+                    });
+                });
+
+                it("should require that password contain a lowercase character", async function () {
+                    await loadAdminUsersPage({});
+
+                    simulateNewUserInput({password: "PASSWORD1"});
+
+                    await waitFor(function () {
+                        expect(screen.getByText("Password must have at least 8 chars, 1 uppercase, 1 lowercase and 1 digit")).toBeInTheDocument();
+                    });
+                });
             });
         });
     });

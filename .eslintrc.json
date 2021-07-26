@@ -70,7 +70,6 @@
         "react/jsx-space-before-closing": "error",
         "react/no-did-mount-set-state": "error",
         "react/no-did-update-set-state": "error",
-        "react/no-multi-comp": "error",
         "react/no-unknown-property": "error",
         "react/prop-types": "error",
         "react/self-closing-comp": "error",

@@ -93,4 +93,34 @@ describe("App Login", function () {
             expect(screen.getByTestId("login-error-message")).toBeInTheDocument();
         });
     });
+
+    it("should validate", async function () {
+        server.use(handleLoginPostRequest({userId: "daniel", role: Role.admin}));
+        server.use(handleUsersFetchRequest({}));
+
+        await initializeLoginPage();
+
+        simulateLogin(screen, {userId: "", password: ""});
+
+        expect(screen.getByText("Please enter a user id.")).toBeInTheDocument();
+        expect(screen.getByText("Please enter a password.")).toBeInTheDocument();
+
+        userEvent.type(screen.getByLabelText("User ID"), "brutus");
+        userEvent.type(screen.getByLabelText("Password"), "Password1");
+
+        expect(screen.queryByText("Please enter a user id.")).toBeNull();
+        expect(screen.queryByText("Please enter a password.")).toBeNull();
+
+        userEvent.click(screen.getByTestId("login-button"));
+
+        await waitFor(function () {
+            expect(screen.getByText("Logging in...")).toBeInTheDocument();
+        });
+
+        await waitFor(function () {
+            expect(screen.queryByText("Logging in...")).toBeNull();
+            expect(screen.getByTestId("admin-users-page")).toBeInTheDocument();
+        });
+
+    });
 });

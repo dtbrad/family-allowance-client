@@ -28,6 +28,12 @@ export default function handlePostTransactionRequest({
     return rest.post(
         `${baseUrl}/admin/users/${userId}/transactions/`,
         function (req, res, ctx) {
+            if (status !== 200) {
+                return res(
+                    ctx.status(status)
+                );
+            };
+
             return res(
                 ctx.status(status),
                 ctx.json(userDetail)
