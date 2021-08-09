@@ -10,6 +10,8 @@ import {
 import {Transaction} from "types";
 import "./TransactionEntriesTable.less";
 import TransactionEntryRow from "./TransactionEntryRow";
+import useIntersectionObserver from "../../AuthenticatedApp/useIntersect";
+import {useRef, useEffect} from "react";
 
 interface GetTransactionsForPageParams {
     transactionEntries: Transaction[];
@@ -30,6 +32,27 @@ export default function TransactionEntriesTable() {
     const transactions = useAppSelector(selectUserDetailTransactions);
     const [currentPage, setCurrentPage] = useState(1);
     const headers = ["Date", "Amount", "Description"];
+    const ref = useRef<HTMLDivElement | null>(null);
+    const entry = useIntersectionObserver(ref, {});
+    const isVisible = !!entry?.isIntersecting;
+
+    useEffect(
+        function () {
+            // console.log("inside USE EFFECT");
+            if (isVisible) {
+                // console.log("INSIDE isVisible");
+                // if (transactionsToDisplay.length < transactions.length) {
+                //     console.log("AND THERE ARE MORE THAT WE COULD SHOW");
+                //     dispatch(didIncrementTransactionsToDisplay());
+                // } else {
+                //     // console.log("NOPE");
+                // }
+                console.log("IS VISBLE");
+            } else {
+                // console.log("never made it to the meat!");
+            }
+        }, [isVisible, transactions.length]
+    );
 
     if (!transactions.length) {
         return (
@@ -89,8 +112,7 @@ export default function TransactionEntriesTable() {
                     </tbody>
                 </Table>
             </div>
-            {pagination}
+            <div ref={ref}>more</div>
         </>
-
     );
 }
